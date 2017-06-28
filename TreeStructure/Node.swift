@@ -28,15 +28,15 @@ class Node {
     
     func insertChildren(children: Array<Node>) {
         for child in children {
-            self.insertChild(child);
+            self.insertChild(child: child);
         }
     }
     
     func removeChild(child: Node) {
-        guard let index = self.children.indexOf(child) else {
+        guard let index = self.children.index(of: child) else {
             return;
         }
-        self.children.removeAtIndex(index);
+        self.children.remove(at: index);
     }
     
     func numberOfLevels() -> Int {
@@ -71,7 +71,7 @@ class Node {
             }
         }
         
-        return size +^ NodeView.separatorSize +^ NodeView.nodeSize;
+        return size + NodeView.separatorSize + NodeView.nodeSize;
     }
     
 }

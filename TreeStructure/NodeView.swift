@@ -8,8 +8,8 @@
 import UIKit
 
 class NodeView: UIView {
-    static let nodeSize = CGSizeMake(50, 25);
-    static let separatorSize = CGSizeMake(10, 25);
+    static let nodeSize = CGSize(width: 50, height: 25);
+    static let separatorSize = CGSize(width: 10, height: 25);
     
     
     var name: String {
@@ -37,7 +37,7 @@ class NodeView: UIView {
     // MARK: Lifecycle methods
     
     class func initFromXib(with node: Node) -> NodeView {
-        let nodeView = NSBundle.mainBundle().loadNibNamed(String(NodeView), owner: self, options: nil)[0] as! NodeView
+        let nodeView = Bundle.main.loadNibNamed(String(describing: NodeView.self), owner: self, options: nil)?[0] as! NodeView
         nodeView.node = node;
         nodeView.name = node.name;
         nodeView.frame.size = node.neededSize();
@@ -47,9 +47,9 @@ class NodeView: UIView {
     
     // MARK: Actions
     
-    @IBAction func onVisibilityTap(sender: UIButton) {
-        self.childrenView.hidden = !self.childrenView.hidden;
-        self.connectorsView.hidden = !self.connectorsView.hidden;
+    @IBAction func onVisxibilityTap(sender: UIButton) {
+        self.childrenView.isHidden = !self.childrenView.isHidden;
+        self.connectorsView.isHidden = !self.connectorsView.isHidden;
     }
     
     
@@ -68,7 +68,8 @@ class NodeView: UIView {
         self.childrenView.frame.size = size;
         self.connectorsView.frame.size = size;
         
-        var origin = CGPointMake(0, NodeView.nodeSize.height + NodeView.separatorSize.height);
+        var origin = CGPoint(x: 0,
+                             y: NodeView.nodeSize.height + NodeView.separatorSize.height);
         
         for child in node.children {
             let childView = NodeView.initFromXib(with: child);
@@ -97,7 +98,7 @@ class NodeView: UIView {
     }
     
     private func drawConnectors() {
-        guard let node = self.node where node.numberOfChildren() > 0 else {
+        guard let node = self.node, node.numberOfChildren() > 0 else {
             return;
         }
         
@@ -106,21 +107,21 @@ class NodeView: UIView {
             return;
         }
         
-        CGContextSetLineWidth(context, 1);
-        CGContextSetStrokeColorWithColor(context, UIColor.blackColor().CGColor);
+        context.setLineWidth(1);
+        context.setStrokeColor(UIColor.black.cgColor);
         let firstChildView = self.childrenView.subviews.first!;
         
         if (node.children.count == 1) {
-            CGContextMoveToPoint(context, firstChildView.center.x, self.vertexView.center.y);
-            CGContextAddLineToPoint(context, firstChildView.center.x, firstChildView.frame.origin.y);
-            CGContextStrokePath(context);
+            context.move(to: CGPoint(x: firstChildView.center.x, y: self.vertexView.center.y));
+            context.addLine(to: CGPoint(x: firstChildView.center.x, y: firstChildView.frame.origin.y));
+            context.strokePath();
         }
         else if (node.children.count > 1) {
             let linePosY = NodeView.nodeSize.height/2 + NodeView.separatorSize.height;
             let lastChildView = self.childrenView.subviews.last!;
-            CGContextMoveToPoint(context, firstChildView.center.x, linePosY);
-            CGContextAddLineToPoint(context, lastChildView.center.x, linePosY);
-            CGContextStrokePath(context);
+            context.move(to: CGPoint(x: firstChildView.center.x, y: linePosY));
+            context.addLine(to: CGPoint(x: lastChildView.center.x, y:  linePosY));
+            context.strokePath();
             
             for childView in self.childrenView.subviews {
                 self.drawLine(fromNode: childView, toLineAt: linePosY, in: context);
@@ -135,9 +136,9 @@ class NodeView: UIView {
     }
     
     private func drawLine(fromNode node: UIView, toLineAt posY: CGFloat, in context: CGContext) {
-        CGContextMoveToPoint(context, node.center.x, node.frame.origin.y);
-        CGContextAddLineToPoint(context, node.center.x, posY);
-        CGContextStrokePath(context);
+        context.move(to: CGPoint(x: node.center.x, y: node.frame.origin.y));
+        context.addLine(to: CGPoint(x: node.center.x, y: posY));
+        context.strokePath();
     }
 }
 
